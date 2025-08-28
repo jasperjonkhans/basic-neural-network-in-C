@@ -4,23 +4,31 @@
 #define MATRIX_H
 
 typedef struct {
-    double *entries; // 1d for performance gains
+    float *entries;
     int rows;
     int cols;
-} matrix; // lowercase because uppercase is tideous to type
+} matrix;
 
-matrix *matrix_create(int rows, int cols);
-matrix *dot_product(matrix * m1, matrix * m2);
-matrix *copy(matrix * m);
-matrix *transpose(matrix * m);
-matrix *transposed_vector_projection(matrix * v, matrix * m);
-void add(matrix * m1, matrix * m2);
-void subtract(matrix * m1, matrix * m2);
-void rand_init(matrix * m);
-void matrix_free(matrix * m);
-void matrix_set(matrix * m, int row, int col, double value);
+//management
+matrix * copy(matrix * m);
 void matrix_print(matrix * m);
-double he_init(int in_degree);
-double matrix_get(matrix * m, int row, int col);
+void shuffle(int * arr, int len);
+void matrix_flatten(matrix * m);
+void matrix_free(matrix * m);
+void rand_init(matrix *m);
+matrix * matrix_create(int cols, int rows, float * entries);
+//not in place
+matrix * dot(matrix * m1, matrix * m2);
+matrix * transpose(matrix * m);
+matrix * add(matrix * m1, matrix * m2);
+matrix * sub(matrix * m1, matrix * m2);
+matrix * hadamard_product(matrix * m1, matrix * m2);
+matrix * scalarmul(matrix * m, float scalar);
+//in place 
+void ipadd(matrix * m1, matrix * m2);
+void ipsub(matrix * m1, matrix * m2);
+void ipscalarmul(matrix * m, float scalar);
+float sum(matrix * m);
+
 
 #endif

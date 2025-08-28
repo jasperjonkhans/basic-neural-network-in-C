@@ -3,68 +3,56 @@
 #include <math.h>
 #include "./matrix.h"
 
-typedef float (*act_f)(float);
-typedef float (*act_fprime)(float);
+typedef void (*act_f)(matrix *);
+typedef void (*act_fprime)(matrix *);
+typedef matrix * (*loss_f)(matrix *, matrix *);
+typedef matrix * (*loss_fprime)(matrix *, matrix *);
 typedef struct {
     act_f func;
     act_fprime fprime;
 } activation;
+typedef struct {
+    loss_f func;
+    loss_fprime fprime;
+} loss;
 
 typedef struct {
     int in;
     int out;
-    matrix * weights; // dim: in * out
+    matrix * weights; // dim: out * in
     matrix * biases;  // dim: out * 1
 } layer;
 
 typedef struct {
     int layerc;
+    float learning_rate;
     layer * layers;
     activation * act;
-    float (*loss_function)(float);
+    loss loss;
 } network;
 
 typedef struct {
-    matrix * img;
-} data_entry;
+    matrix * input;
+    matrix * output;
+} data_point;
 
-// activation functions
+typedef struct {
+    int size;
+    data_point * entry;
+} data_set;
 
-inline float LeakyReLU(float signal){
-    return signal > 0 ? signal : 0.01 * signal;
-}
-
-inline float LeakyReLU_prime(float signal){
-    return signal > 0 ? 1 : 0.01;
-}
-
-inline float ReLU(float signal){
-    return signal > 0 ? signal : 0;
-}
-
-inline float ReLU_prime(float signal){
-    return signal > 0 ? 1 : 0;
-}
-
-// loss functions
-
-inline float cross_entropy_loss(matrix * v, matrix * y){
-    float sum = 0;
-    for (int i = 0; i < v->rows; i++){
-        sum += y->entries[i] * log(v->entries[i]);
-    }
-    return -sum;
-}
-
+//neural net main funcs
+float accuracy(network * net, data_set * set);
+void test(network * net, data_set * set);
 network * net_create(int input, int output, int hidden, int layerc);
-network * net_load(char * location_string);
-matrix * net_predict(network * net, matrix * input);
-void free_snapshot(matrix ** snap, int layerc);
-void net_train(network * net);
-void net_save(network * net);
-void net_free(network * net);
+matrix * forward(network * net, matrix * input, matrix *** A);
+void backward(network *net, matrix **A, float lr, matrix *Y);
 void net_print(network * net);
-void apply(matrix * m, float (*func)(float));
-double matrix_get(matrix * m, int row, int col);
-void matrix_set(matrix * m, int row, int col, double value);
-double mean_squared_error(matrix * output, matrix * training);
+void net_train(network * net, int epochs, data_set * set, float learningrate);
+//lossfunctions
+matrix * MSE(matrix * output, matrix * expected);
+matrix * MSEprime(matrix * output, matrix * expected);
+//activationfunctions
+void softmax(matrix * m);
+void LeakyReLU(matrix * z);
+void LeakyReLUprime(matrix * z);
