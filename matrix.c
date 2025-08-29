@@ -38,8 +38,6 @@ static float he_init(int in_degree){
     return ((double) rand() / (double) RAND_MAX * 2 - 1) * limit;
 }
 
-//NEUE FUNKTIONEN
-
 void rand_init(matrix *m){
     for(int i = 0; i < m->rows; i++){
         for(int j = 0; j < m->cols; j++){
@@ -196,78 +194,3 @@ void ipscalarmul(matrix * m, float scalar){
         }
     }
 }
-
-/*
-typedef struct {
-    float *entries;
-    int rows;
-    int cols;
-} matrix;
-
-matrix * copy(matrix * m){
-    matrix * clone = matrix_create(m->rows, m->cols, m->entries);
-    return clone;
-}
-matrix * hadamard_product(matrix * m1, matrix * m2){
-    if(m1->cols == m2->cols && m1->rows == m2->rows){
-        matrix * result = matrix_create(m1->rows, m1->cols, NULL);
-        for(int i = 0; i < m1->rows; i++){
-            for(int j = 0; j < m1->cols; j++){
-                result->entries[i * result->cols + j] = m1->entries[i * m1->cols + j] * m2->entries[i * m2->cols + j];
-            }
-        }
-        return result;
-    }else{
-        fprintf(stderr, "dimensions unfit for taking the hadamard product, %dx%d, %dx%d", m1->rows, m1->cols, m2->rows, m2->cols);
-        exit(1);
-    }
-}
-matrix * transpose(matrix * m){
-    matrix * result = matrix_create(m->cols, m->rows, NULL);
-    for(int i = 0; i < m->rows; i++){
-        for(int j = 0; j < m->cols; j++){
-            result->entries[j * result->cols + i] = m->entries[i * m->cols + j];
-        }
-    }
-    return result;
-} 
-matrix *dot(matrix * m1, matrix * m2){
-    // standard matrix multiplication: m1 (a x b) * m2 (b x c) = result (a x c)
-    if(m1->cols == m2->rows){
-        matrix * result = matrix_create(m1->rows, m2->cols, NULL);
-        for(int i = 0; i < m1->rows; i++){
-            for(int j = 0; j < m2->cols; j++){
-                double sum = 0;
-                for(int k = 0; k < m1->cols; k++){
-                    sum += m1->entries[i * m1->cols + k] * m2->entries[k * m2->cols + j];
-                }
-                result->entries[i * result->cols + j] = sum;
-            }
-        }
-        return result;
-    }else{
-        fprintf(stderr, "dimensions unfit for matrix multiplication, %dx%d * %dx%d", m1->rows, m1->cols, m2->rows, m2->cols);
-        exit(1);
-    }
-}
-void ipscalarmul(matrix * m, float scalar){
-    for(int i = 0; i < m->rows; i++){
-        for(int j = 0; j < m->cols; j++){
-            m->entries[i * m->cols + j] = m->entries[i * m->cols + j] * scalar;
-        }
-    }
-}
-void ipsub(matrix * m1, matrix * m2){
-    if(m1->cols == m2->cols && m1->rows == m2->rows){
-        for(int i = 0; i < m1->rows; i++){
-            for(int j = 0; j < m1->cols; j++){
-                m1->entries[i * m1->cols + j] = m1->entries[i * m1->cols + j] - m2->entries[i * m2->cols + j];
-            }
-        }
-    }else{
-        fprintf(stderr, "dimensions unfit for matrix subtraction, %dx%d, %dx%d", m1->rows, m1->cols, m2->rows, m2->cols);
-        exit(1);
-    }
-}
-
-*/

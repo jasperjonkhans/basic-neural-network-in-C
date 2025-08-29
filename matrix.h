@@ -16,7 +16,7 @@ void shuffle(int * arr, int len);
 void matrix_flatten(matrix * m);
 void matrix_free(matrix * m);
 void rand_init(matrix *m);
-matrix * matrix_create(int cols, int rows, float * entries);
+matrix * matrix_create(int rows, int cols, float * entries);
 //not in place
 matrix * dot(matrix * m1, matrix * m2);
 matrix * transpose(matrix * m);

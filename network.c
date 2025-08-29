@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "./matrix.h"
 #include "./network.h"
+#include <sys/stat.h>
 
 // input: n * 1 vector (column vector)
 static void apply(matrix * vector, float (*func)(float)){
@@ -228,26 +229,43 @@ matrix *forward(network *net, matrix *input, matrix ***A) {
     return (*A)[L-1];
 }
 
+float percentage(matrix * A_L, matrix * Y) {
+    for(int i = 0; i < Y->rows; i++){
+        if(Y->entries[i] == 1){
+            return 100 * A_L->entries[i];
+        }
+    }
+}
+
+void net_save(network * net){
+    
+}
+
 
 void net_train(network * net, int epochs, data_set * set, float learningrate){
-    printf("neural net training...epochs: %d\n\n",epochs);
+    float percent = 0;
+    float sum = 0;
+    int k = 0;
+    printf("neural net training...\n\n");
     if(!set){ printf("set is null"); exit(1); }
     int *indices = malloc((size_t)set->size * sizeof *indices);
     if (!indices) { perror("malloc"); exit(1); }
     for (int i = 0; i < set->size; i++) indices[i] = i; 
-
     for (int i = 0; i < epochs; i++){
         shuffle(indices, set->size);
-
         for(int j = 0; j < set->size; j++) {
             matrix **A = NULL;
             matrix *out = forward(net, set->entry[indices[j]].input, &A);
-            if(i == epochs - 1){
-                printf("\n\nexpected\n");
-                matrix_print(set->entry[indices[j]].output);
-                printf("output\n");
-                matrix_print(out);
+            sum += percentage(out, set->entry[indices[j]].output);
+            if(j%((int)(set->size * epochs/1000)) == 0){
+                float acc = (sum / k - 0.1f)*(10/9) ;
+                printf("\r%.1f%% progress | %.1f%% accuracy", percent, acc);
+                percent += 0.1f;
+                fflush(stdout);
+                k = 0;
+                sum = 0;
             }
+            k++;
             //net_print(net);
             backward(net, A, learningrate, set->entry[indices[j]].output);
             // free A[0..L-1] (Input + all layers)
@@ -256,7 +274,7 @@ void net_train(network * net, int epochs, data_set * set, float learningrate){
         }
     }
     free(indices);
-    printf("training complete!\n");
+    printf("\n\ntraining complete!\n");
 }
 
 float accuracy(network * net, data_set * set){
