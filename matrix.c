@@ -15,19 +15,17 @@ matrix * copy(matrix * m){
 }
 static matrix * add_scalar(matrix * m, float scalar){
     matrix * result = matrix_create(m->rows, m->cols, NULL);
-    for(int i = 0; i < m->rows; i++){
-        for(int j = 0; j < m->cols; j++){
-            result->entries[i * result->cols + j] = m->entries[i * m->cols + j] + scalar;
-        }
+    int len = m->rows * m->cols;
+    for(int i = 0; i < len; i++){
+        result->entries[i] = m->entries[i] + scalar;
     }
     return result;
 }
 static matrix * subtract_scalar(matrix * m, float scalar){
     matrix * result = matrix_create(m->rows, m->cols, NULL);
-    for(int i = 0; i < m->rows; i++){
-        for(int j = 0; j < m->cols; j++){
-            result->entries[i * result->cols + j] = m->entries[i * m->cols + j] - scalar;
-        }
+    int len = m->rows * m->cols;
+    for(int i = 0; i < len; i++){
+        result->entries[i] = m->entries[i] - scalar;
     }
     return result;
 }
@@ -39,10 +37,9 @@ static float he_init(int in_degree){
 }
 
 void rand_init(matrix *m){
-    for(int i = 0; i < m->rows; i++){
-        for(int j = 0; j < m->cols; j++){
-            m->entries[i * m->cols + j] = he_init(m->rows);
-        }
+    int len = m->rows * m->cols;
+    for(int i = 0; i < len; i++){
+        m->entries[i] = he_init(m->rows);
     }
 }
 //management funcs
@@ -85,7 +82,7 @@ matrix * matrix_create(int rows, int cols, float * entries){
     m->rows = rows;
     m->cols = cols;
     m->entries = malloc(sizeof(float) * rows * cols);
-    if(entries){
+    if(entries){ 
         for(int i = 0; i < cols * rows; i++) m->entries[i] = entries[i];
     }
     return m;
@@ -143,10 +140,9 @@ matrix * sub(matrix * m1, matrix * m2){
 matrix * hadamard_product(matrix * m1, matrix * m2){
     if(m1->cols == m2->cols && m1->rows == m2->rows){
         matrix * result = matrix_create(m1->rows, m1->cols, NULL);
-        for(int i = 0; i < m1->rows; i++){
-            for(int j = 0; j < m1->cols; j++){
-                result->entries[i * result->cols + j] = m1->entries[i * m1->cols + j] * m2->entries[i * m2->cols + j];
-            }
+        int len = m1->rows * m1->cols;
+        for(int i = 0; i < len; i++){
+            result->entries[i] = m1->entries[i] * m2->entries[i];
         }
         return result;
     }else{
@@ -164,10 +160,9 @@ float sum(matrix * m){
 }
 void ipadd(matrix * m1, matrix * m2){
     if(m1->cols == m2->cols && m1->rows == m2->rows){
-        for(int i = 0; i < m1->rows; i++){
-            for(int j = 0; j < m1->cols; j++){
-                m1->entries[i * m1->cols + j] = m1->entries[i * m1->cols + j] + m2->entries[i * m2->cols + j];
-            }
+        int len = m1->rows * m1->cols;
+        for(int i = 0; i < len; i++){
+            m1->entries[i] += m2->entries[i];
         }
     }else{
         fprintf(stderr, "dimensions unfit for matrix addition, %dx%d, %dx%d", m1->rows, m1->cols, m2->rows, m2->cols);
@@ -177,10 +172,9 @@ void ipadd(matrix * m1, matrix * m2){
 
 void ipsub(matrix * m1, matrix * m2){
     if(m1->cols == m2->cols && m1->rows == m2->rows){
-        for(int i = 0; i < m1->rows; i++){
-            for(int j = 0; j < m1->cols; j++){
-                m1->entries[i * m1->cols + j] = m1->entries[i * m1->cols + j] - m2->entries[i * m2->cols + j];
-            }
+        int len = m1->rows * m1->cols;
+        for(int i = 0; i < len; i++){
+            m1->entries[i] -= m2->entries[i];
         }
     }else{
         fprintf(stderr, "dimensions unfit for matrix subtraction, %dx%d, %dx%d", m1->rows, m1->cols, m2->rows, m2->cols);
@@ -188,9 +182,8 @@ void ipsub(matrix * m1, matrix * m2){
     }
 }
 void ipscalarmul(matrix * m, float scalar){
-    for(int i = 0; i < m->rows; i++){
-        for(int j = 0; j < m->cols; j++){
-            m->entries[i * m->cols + j] = m->entries[i * m->cols + j] * scalar;
-        }
+    int len = m->rows * m->cols;
+    for(int i = 0; i < len; i++){
+        m->entries[i] *= scalar;
     }
 }
